@@ -1,10 +1,10 @@
-FROM node:16-alpine as base
+FROM --platform=linux/amd64 node:18-alpine as base
 
 FROM base as deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package.json yarn.lock .yarnrc.yml .pnp.* ./
+COPY package.json .yarnrc.yml yarn.lock  ./
 COPY .yarn ./.yarn
 
 RUN sed -i '1s/pnp/node-modules/g' .yarnrc.yml

@@ -128,7 +128,6 @@ __metadata:
 "@next/swc-linux-arm64-musl@npm:13.5.4":
   version: 13.5.4
   resolution: "@next/swc-linux-arm64-musl@npm:13.5.4"
-  checksum: 0ac043da3bba35b83fd6b7c6d3a768ea49dd6e394b08a1466c047de5175cd6fc3d428a15bcec257df51587a2268fd9802f01fc02becd33d9c380b3e5f9e6005a
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
@@ -143,6 +142,7 @@ __metadata:
 "@next/swc-linux-x64-musl@npm:13.5.4":
   version: 13.5.4
   resolution: "@next/swc-linux-x64-musl@npm:13.5.4"
+  checksum: 9020bae47c6affc2766c0fb82da0d1879ca9d0fbce2574f1073147e7db73589a13ecd84fb8fa44f0978696ea4feb25582b3891cf01f28f281e032372f2b434a3
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
@@ -1718,7 +1718,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "it-is-me@workspace:."
   dependencies:
-    "@next/swc-linux-arm64-musl": "npm:13.5.4"
+    "@next/swc-linux-x64-musl": "npm:13.5.4"
     "@types/node": ^20
     "@types/react": ^18
     "@types/react-dom": ^18
