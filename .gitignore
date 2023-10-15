@@ -7,3 +7,11 @@
 
 # IDE
 .vscode
+
+# docker
+/docker/*
+!/docker/*.dockerfile*
+!/docker/docker-compose*.yml
+
+# db
+/db/*

@@ -1,0 +1,67 @@
+version: "3.8"
+
+networks:
+  server-connection:
+    driver: bridge
+  db-connection:
+    driver: bridge
+
+services:
+  nginx:
+    container_name: nginx-dev
+    image: nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../proxy/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - server-connection
+    environment:
+      TZ: Asia/Seoul
+    depends_on:
+      - api
+      - client
+
+  client:
+    container_name: it-is-me-client-dev
+    image: byungjinlee/it-is-me-client
+    build:
+      dockerfile: ./client.Dockerfile
+    restart: always
+    expose:
+      - "3000"
+    networks:
+      - server-connection
+    env_file:
+      - ../.env.client.local
+
+  api:
+    container_name: it-is-me-api-dev
+    image: byungjinlee/it-is-me-api
+    build:
+      dockerfile: ./api.Dockerfile
+    restart: always
+    expose:
+      - "8080"
+    networks:
+      - db-connection
+      - server-connection
+    depends_on:
+      - db
+    env_file:
+      - ../.env.api.local
+
+  db:
+    container_name: it-is-me-db-dev
+    image: mysql:8.0
+    restart: always
+    networks:
+      - db-connection
+    expose:
+      - "3306"
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - ../db/dev:/var/lib/mysql
