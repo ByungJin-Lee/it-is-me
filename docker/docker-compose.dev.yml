@@ -52,6 +52,8 @@ services:
       - db
     env_file:
       - ../.env.api.local
+    environment:
+      PORT: 8080
 
   db:
     container_name: it-is-me-db-dev
@@ -63,5 +65,7 @@ services:
       - "3306"
     environment:
       TZ: Asia/Seoul
+    env_file:
+      - ../.env.db.local
     volumes:
       - ../db/dev:/var/lib/mysql

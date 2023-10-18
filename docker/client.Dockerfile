@@ -9,7 +9,7 @@ COPY .yarn ./.yarn
 
 RUN sed -i '1s/pnp/node-modules/g' .yarnrc.yml
 
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 FROM base as builder
 WORKDIR /app

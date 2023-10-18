@@ -13,7 +13,7 @@ func RegisterRouter (env *internal.Env, app *fiber.App) {
 	controller := Controller {
 		env: env,
 	}
-	group := app.Group("/v0")
+	group := app.Group("/api/v0")
 	
 	group.Get("/health", controller.checkHealth)
 }
