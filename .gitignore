@@ -1,5 +1,6 @@
 # local env files
 .env*.local
+.env*.prod
 
 # misc
 .DS_Store
