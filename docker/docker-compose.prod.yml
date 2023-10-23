@@ -26,7 +26,7 @@ services:
 
   client:
     container_name: it-is-me-client
-    image: byungjinlee/it-is-me-client
+    image: ghcr.io/byungjin-lee/it-is-me-client:latest
     build:
       dockerfile: ./client.Dockerfile
     restart: always
@@ -39,7 +39,7 @@ services:
 
   api:
     container_name: it-is-me-api
-    image: byungjinlee/it-is-me-api
+    image: ghcr.io/byungjin-lee/it-is-me-api:latest
     build:
       dockerfile: ./api.Dockerfile
     restart: always
