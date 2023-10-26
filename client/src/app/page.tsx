@@ -1,3 +1,9 @@
+import Whiteboard from "src/components/Whiteboard";
+
 export default function Home() {
-  return <main>Hello</main>;
+  return (
+    <main>
+      <Whiteboard />
+    </main>
+  );
 }
