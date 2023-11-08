@@ -1,9 +1,7 @@
-"use client";
-
 import { Drawing } from "pkg/drawing";
 import { useEffect, useRef } from "react";
 
-export default function Whiteboard() {
+export default function useDrawing() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawingRef = useRef<Drawing | null>(null);
 
@@ -13,5 +11,8 @@ export default function Whiteboard() {
     }
   }, [canvasRef]);
 
-  return <canvas ref={canvasRef} width={640} height={480} />;
+  return {
+    canvasRef,
+    drawing: drawingRef.current,
+  };
 }

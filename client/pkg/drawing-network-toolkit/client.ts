@@ -1,16 +1,24 @@
-import { Socket } from "socket.io";
-import { ClientSocketEventMap, IClientSocket } from "./types";
+import Translator from "./translator";
+import { ClientSocketEventMap, IClientSocket, ICommand } from "./types";
 
 export default class ClientSocket implements IClientSocket {
-  private socket: Socket;
+  private socket: WebSocket;
+  private eventMap: Partial<ClientSocketEventMap>;
 
-  private constructor(socket: Socket) {
-    this.socket = socket;
+  constructor(url: string) {
+    this.socket = new WebSocket(url);
+    this.eventMap = {};
+    this.init();
   }
 
-  getId(): string {
-    return ClientSocket.getId(this.socket);
+  private init() {
+    const s = this.socket;
+    s.onopen = (e) => this.eventMap.connect?.();
+    s.onclose = (e) => this.eventMap.disconnect?.();
+    s.onmessage = ({ data }) =>
+      this.eventMap.command?.(Translator.decode(data));
   }
+
   getConnectedAt(): number {
     throw new Error("Method not implemented.");
   }
@@ -20,16 +28,18 @@ export default class ClientSocket implements IClientSocket {
   close(): void {
     throw new Error("Method not implemented.");
   }
-  _on<T extends keyof ClientSocketEventMap>(
+
+  on<T extends keyof ClientSocketEventMap>(
     type: T,
     callback: ClientSocketEventMap[T]
-  ) {}
-
-  static from(socket: Socket): ClientSocket {
-    return new ClientSocket(socket);
+  ) {
+    this.eventMap[type] = callback;
   }
 
-  static getId(socket: Socket): string {
-    return socket.id;
+  send(command: ICommand): void {
+    if (this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(Translator.encode(command));
+    }
+    // ! Throw an error if the socket is not open
   }
 }
