@@ -9,8 +9,10 @@ export interface Position {
 }
 
 interface _DrawingItem<K = string> extends Position {
-  id: string;
   kind: K;
+  color: string;
+  width: number;
+  // TODO : add more properties (e.g. color, stroke, etc.)
 }
 
 type _DrawingItemWithData<K = string, T = unknown> = _DrawingItem<K> & {
@@ -27,4 +29,4 @@ export enum DrawingCaptureEvents {
   MouseMove,
 }
 
-export type DrawingItemMap<T extends DrawingItem> = Map<DrawingItem["id"], T>;
+export type DrawingItems<T extends DrawingItem> = T[];

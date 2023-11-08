@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "src/styles/reset.css";
 
 export const metadata: Metadata = {
   title: "Byungjin Lee",

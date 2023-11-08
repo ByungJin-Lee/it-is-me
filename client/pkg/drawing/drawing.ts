@@ -4,7 +4,7 @@ import { Shapes } from "./shapes";
 import { default as CanvasDrawingTool } from "./tools";
 import { DrawingCaptureEvents, Position } from "./types";
 
-export default class CanvasDrawing extends Drawable {
+export default class CanvasDrawing extends Drawable<Shapes> {
   private ctx: DrawingContext<Shapes>;
   private tool: DrawingTool<Shapes>;
 
@@ -20,12 +20,16 @@ export default class CanvasDrawing extends Drawable {
     const tool = this.tool;
 
     HandlerEventMap.forEach(([type, captureEvent]) => {
-      canvas.addEventListener(type, (e) =>
+      canvas.addEventListener(type, (e) => {
+        // prevent default
+        e.preventDefault();
+        e.stopPropagation();
+
         tool.capture(
           this.destructMouseEventToPosition(e),
           captureEvent as DrawingCaptureEvents
-        )
-      );
+        );
+      });
     });
   }
 
@@ -45,11 +49,18 @@ export default class CanvasDrawing extends Drawable {
     this.ctx = ctx;
   }
 
-  protected drawBackground(): void {
-    throw new Error("Method not implemented.");
+  protected drawBackground(ctx: DrawingContext<Shapes>): void {
+    // throw new Error("Method not implemented.");
   }
-  protected drawForeground(): void {
-    throw new Error("Method not implemented.");
+  protected drawForeground(ctx: DrawingContext<Shapes>): void {
+    // throw new Error("Method not implemented.");
+    const [items, canvasContext] = [
+      ctx.getFreshItems(true), // make stale
+      ctx.getCanvasContext(),
+    ];
+    const tool = this.getTool();
+
+    items.forEach((item) => tool.draw(canvasContext, item));
   }
 
   private destructMouseEventToPosition(e: MouseEvent): Position {

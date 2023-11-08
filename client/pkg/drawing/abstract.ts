@@ -6,15 +6,17 @@ import { DrawingCaptureEvents, DrawingItem, Position } from "./types";
 /**
  * @description Abstract class for drawing
  */
-export abstract class Drawable {
-  protected abstract drawBackground(): void;
-  protected abstract drawForeground(): void;
+export abstract class Drawable<T extends DrawingItem> {
+  protected abstract drawBackground(ctx: DrawingContext<T>): void;
+  protected abstract drawForeground(ctx: DrawingContext<T>): void;
+  protected abstract getContext(): DrawingContext<T>;
 
   public draw() {
+    const ctx = this.getContext();
     // draw background
-    this.drawBackground();
+    this.drawBackground(ctx);
     // draw foreground
-    this.drawForeground();
+    this.drawForeground(ctx);
   }
 }
 
@@ -66,6 +68,14 @@ export abstract class DrawingTool<T extends DrawingItem> {
     }
   }
 
+  public draw(ctx: CanvasRenderingContext2D, item: T) {
+    const strategy = this.strategyMap[item.kind as T["kind"]];
+    if (!strategy) {
+      throw new DrawingError(this.ctx, DrawingErrorCode.ToolStrategyNotFound);
+    }
+    strategy.onDraw(ctx, item);
+  }
+
   public getCurrentTool() {
     return this.currentTool;
   }
@@ -73,13 +83,33 @@ export abstract class DrawingTool<T extends DrawingItem> {
   public setCurrentTool(tool: T["kind"]) {
     this.currentTool = tool;
   }
+
+  public getTools(): T["kind"][] {
+    return Object.getOwnPropertyNames(this.strategyMap) as T["kind"][];
+  }
 }
 
 /**
  * @description Drawing strategy
  */
-export abstract class DrawingStrategy<T> {
+export abstract class DrawingStrategy<T, Option = unknown> {
+  protected option: Option;
+
+  constructor(option: Option) {
+    this.option = option;
+  }
+
+  public getOption(): Option {
+    return this.option;
+  }
+  public setOption(option: Partial<Option>): void {
+    this.option = {
+      ...this.option,
+      ...option,
+    };
+  }
   public abstract onMouseDown(p: Position): T | undefined;
   public abstract onMouseUp(p: Position): T | undefined;
   public abstract onMouseMove(p: Position): T | undefined;
+  public abstract onDraw(ctx: CanvasRenderingContext2D, item: T): void;
 }

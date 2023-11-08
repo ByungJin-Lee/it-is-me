@@ -1,18 +1,20 @@
 import DrawingError, { DrawingErrorCode } from "./error";
-import { DrawingItem, DrawingItemMap, Position, Rectangle } from "./types";
+import { DrawingItem, DrawingItems, Position, Rectangle } from "./types";
 
 export default class DrawingContext<T extends DrawingItem = DrawingItem> {
   private zoom: number;
   private position: Position;
   private readonly viewport: Rectangle;
   private readonly canvas: HTMLCanvasElement;
-  private items: DrawingItemMap<T>;
+  private freshItems: DrawingItems<T>;
+  private staleItems: DrawingItems<T>;
 
   constructor(zoom: number, canvas: HTMLCanvasElement) {
     this.zoom = zoom;
     this.position = { x: 0, y: 0 };
     this.canvas = canvas;
-    this.items = new Map();
+    this.freshItems = new Array();
+    this.staleItems = new Array();
     this.viewport = DrawingContext.calculateViewportFromCanvas(canvas);
   }
 
@@ -30,22 +32,27 @@ export default class DrawingContext<T extends DrawingItem = DrawingItem> {
     return this.canvas;
   }
 
-  public getItems() {
-    return this.items;
+  public getFreshItems(stale = false) {
+    const items = this.freshItems;
+
+    if (stale) {
+      this.freshItems = new Array();
+      this.staleItems = this.staleItems.concat(items);
+    }
+
+    return items;
   }
 
-  public setItems(items: DrawingItemMap<T>): void {
-    this.items = items;
+  public setFreshItems(items: DrawingItems<T>): void {
+    this.freshItems = items;
+  }
+
+  public getStaleItems() {
+    return this.staleItems;
   }
 
   public addItem(item: T) {
-    if (this.items.has(item.id))
-      throw new DrawingError(this, DrawingErrorCode.ItemAlreadyExists);
-    this.items.set(item.id, item);
-  }
-
-  public removeItem(item: T) {
-    this.items.delete(item.id);
+    this.freshItems.push(item);
   }
 
   public getZoom() {

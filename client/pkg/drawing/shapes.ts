@@ -5,7 +5,6 @@ export type Rectangle = DrawingItem<
   {
     pX: number;
     pY: number;
-    width: number;
   }
 >;
 
@@ -14,16 +13,20 @@ export type Circle = DrawingItem<
   {
     pX: number;
     pY: number;
-    width: number;
   }
 >;
 
-export type Dot = DrawingItem<"dot">;
+export type Line = DrawingItem<
+  "line",
+  {
+    x: number;
+    y: number;
+  }
+>;
 
 export type Text = DrawingItem<
   "text",
   {
-    fontSize: number;
     text: string;
   }
 >;
@@ -35,4 +38,4 @@ export type Image = DrawingItem<
   }
 >;
 
-export type Shapes = Rectangle | Circle | Dot | Text | Image;
+export type Shapes = Rectangle | Circle | Line | Text | Image;
