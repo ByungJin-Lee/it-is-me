@@ -8,6 +8,7 @@ export default class DrawingContext<T extends DrawingItem = DrawingItem> {
   private readonly canvas: HTMLCanvasElement;
   private freshItems: DrawingItems<T>;
   private staleItems: DrawingItems<T>;
+  private onItemAdded?: (item: T) => void;
 
   constructor(zoom: number, canvas: HTMLCanvasElement) {
     this.zoom = zoom;
@@ -53,6 +54,11 @@ export default class DrawingContext<T extends DrawingItem = DrawingItem> {
 
   public addItem(item: T) {
     this.freshItems.push(item);
+    this.onItemAdded?.(item);
+  }
+
+  public setOnItemAdded(callback: (item: T) => void) {
+    this.onItemAdded = callback;
   }
 
   public getZoom() {

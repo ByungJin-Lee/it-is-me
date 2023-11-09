@@ -1,11 +1,11 @@
 "use client";
 
-import { DrawingSocket, IClientSocket } from "pkg/drawing-network-toolkit";
-import { useEffect, useRef } from "react";
+import { IClientSocket } from "pkg/drawing-network-toolkit";
+import { useRef } from "react";
 import useDrawing from "./hook";
 
 export default function Whiteboard() {
-  const { canvasRef, drawing } = useDrawing();
+  const { canvasRef } = useDrawing();
   const socketRef = useRef<IClientSocket | null>(null);
 
   const handleClick = () => {
@@ -16,24 +16,6 @@ export default function Whiteboard() {
       data: "value",
     });
   };
-
-  useEffect(() => {
-    if (!socketRef.current) {
-      socketRef.current = new DrawingSocket(
-        "ws://localhost:8080/api/ws/drawing/connect"
-      );
-
-      socketRef.current.on("command", (command) => {
-        console.log(command);
-      });
-      socketRef.current.on("connect", () => {
-        console.log("connected");
-      });
-      socketRef.current.on("disconnect", () => {
-        console.log("disconnected");
-      });
-    }
-  }, [socketRef]);
 
   return (
     <>

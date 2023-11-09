@@ -1,6 +1,12 @@
 export interface ICommand {
   type: string;
   data: any;
+  from?: string;
+}
+
+export enum CommandType {
+  ID = "id",
+  Draw = "draw",
 }
 
 // for example, a timestamp in milliseconds(UTC)
@@ -22,4 +28,5 @@ export interface IClientSocket {
   ): void;
 
   send(command: ICommand): void;
+  sendDraw(data: any): void;
 }

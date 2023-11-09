@@ -1,9 +1,15 @@
 import Translator from "./translator";
-import { ClientSocketEventMap, IClientSocket, ICommand } from "./types";
+import {
+  ClientSocketEventMap,
+  CommandType,
+  IClientSocket,
+  ICommand,
+} from "./types";
 
 export default class ClientSocket implements IClientSocket {
   private socket: WebSocket;
   private eventMap: Partial<ClientSocketEventMap>;
+  private translator?: Translator;
 
   constructor(url: string) {
     this.socket = new WebSocket(url);
@@ -13,10 +19,20 @@ export default class ClientSocket implements IClientSocket {
 
   private init() {
     const s = this.socket;
-    s.onopen = (e) => this.eventMap.connect?.();
-    s.onclose = (e) => this.eventMap.disconnect?.();
-    s.onmessage = ({ data }) =>
-      this.eventMap.command?.(Translator.decode(data));
+    s.onopen = (_) => this.eventMap.connect?.();
+    s.onclose = (_) => this.eventMap.disconnect?.();
+    s.onmessage = ({ data }) => {
+      const command = Translator.decode(data);
+
+      if (command.type === CommandType.ID) {
+        this.translator = new Translator(command.data);
+        // replace the onmessage handler
+        s.onmessage = ({ data }) => {
+          const command = this.translator?.decode(data);
+          command && this.eventMap.command?.(command);
+        };
+      }
+    };
   }
 
   getConnectedAt(): number {
@@ -37,9 +53,16 @@ export default class ClientSocket implements IClientSocket {
   }
 
   send(command: ICommand): void {
-    if (this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(Translator.encode(command));
+    if (this.translator && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(this.translator.encode(command));
     }
     // ! Throw an error if the socket is not open
+  }
+
+  sendDraw(data: any): void {
+    this.send({
+      type: CommandType.Draw,
+      data,
+    });
   }
 }

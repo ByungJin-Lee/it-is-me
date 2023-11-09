@@ -13,7 +13,7 @@ const ErrorMessages: Record<DrawingErrorCode, string> = {
 };
 
 export default class DrawingError extends Error {
-  constructor(ctx: DrawingContext, errorCode: DrawingErrorCode) {
+  constructor(ctx: DrawingContext<any>, errorCode: DrawingErrorCode) {
     super(ErrorMessages[errorCode] + JSON.stringify(ctx, null, 2));
     this.name = "DrawingError(" + DrawingErrorCode[errorCode] + ")";
   }

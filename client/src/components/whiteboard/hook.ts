@@ -1,27 +1,37 @@
 import { Drawing } from "pkg/drawing";
+import { DrawingSocket, IClientSocket } from "pkg/drawing-network-toolkit";
 import { useEffect, useRef } from "react";
+
+interface Services {
+  drawing: Drawing;
+  socket: IClientSocket;
+}
 
 export default function useDrawing(
   fps = 30 // 30fps
 ) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const drawingRef = useRef<Drawing | null>(null);
+  const services = useRef<Services | null>(null);
 
   useEffect(() => {
-    if (canvasRef.current && !drawingRef.current) {
-      drawingRef.current = new Drawing(canvasRef.current);
+    if (canvasRef.current && !services.current) {
+      services.current = {
+        drawing: new Drawing(canvasRef.current),
+        socket: new DrawingSocket("ws://localhost:8080/api/ws/drawing/connect"),
+      };
+      initialize(services.current);
     }
   }, [canvasRef]);
 
   useEffect(() => {
-    if (!drawingRef.current) return;
+    if (!services.current) return;
 
     let startTime = 0;
     const DIFF = 1000 / fps;
 
     const draw = (timestamp: number) => {
       if (timestamp - startTime > DIFF) {
-        drawingRef.current?.draw();
+        services.current?.drawing.draw();
         startTime = timestamp;
       }
       requestAnimationFrame(draw);
@@ -32,10 +42,16 @@ export default function useDrawing(
     return () => {
       cancelAnimationFrame(id);
     };
-  }, [drawingRef, fps]);
+  }, [services, fps]);
 
   return {
     canvasRef,
-    drawing: drawingRef.current,
+    services: services.current,
   };
+}
+
+function initialize({ drawing, socket }: Services) {
+  drawing.getContext().setOnItemAdded((e) => {
+    socket.sendDraw(e);
+  });
 }
