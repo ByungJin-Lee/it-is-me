@@ -1,17 +1,17 @@
 package drawing
 
 import (
-	"bytes"
-
 	"github.com/gofiber/contrib/websocket"
+	"github.com/google/uuid"
 )
 
 
 
 type Client struct {
-	send chan []byte
+	send chan Command
 	conn *websocket.Conn
 	service IDrawingService
+	id string
 }
 
 func (c *Client) Close() {
@@ -19,12 +19,16 @@ func (c *Client) Close() {
 	close(c.send)
 }
 
-func (c *Client) SendChannel() chan []byte {
+func (c *Client) SendCommandChannel() chan Command {
 	return c.send
 }
 
 func (c *Client) Service() IDrawingService {
 	return c.service
+}
+
+func (c *Client) SendCommand(command Command) {
+	c.conn.WriteJSON(command)
 }
 
 func (c *Client) Start() {
@@ -46,14 +50,12 @@ func (c *Client) read() {
 	}()
 
 	for {
-
-		_, message, err := c.conn.ReadMessage()
+		command := new(Command)
+		err := c.conn.ReadJSON(command)
 		if err != nil {
 			break
 		}
-
-		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		c.service.EventChannels().Broadcast() <- message
+		c.service.EventChannels().Broadcast() <- *command
 	}
 
 }
@@ -64,25 +66,13 @@ func (c *Client) write() {
 	for {
 
 		select {
-			case message, ok := <-c.send:
+			case command, ok := <-c.send:
 				if !ok {
 					c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 					return
 				}
 
-				w, err := c.conn.NextWriter(websocket.TextMessage)
-				if err != nil {
-					return
-				}
-				w.Write(message)
-
-				n := len(c.send)
-				for i := 0; i < n; i++ {
-					w.Write(newline)
-					w.Write(<-c.send)
-				}
-
-				if err := w.Close(); err != nil {
+				if err := c.conn.WriteJSON(command); err != nil {
 					return	
 				}
 		}
@@ -90,10 +80,15 @@ func (c *Client) write() {
 	}
 }
 
+func (c *Client) GetId() string {
+	return c.id
+}
+
 func NewClient(s IDrawingService, c *websocket.Conn) IClient {
 	return &Client{
-		send: make(chan []byte, 256),
+		send: make(chan Command),
 		conn: c,
 		service: s,
+		id: uuid.NewString(),
 	}
 }

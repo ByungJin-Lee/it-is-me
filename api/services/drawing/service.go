@@ -35,14 +35,25 @@ func (s *DrawingService) Run() {
 		select {
 		case client := <-connections:
 			s.pool.Add(client)
+			s.SendJsonFromServer(client.GetId(), Command{
+				Type: TypeSendID,
+				Data: client.GetId(),
+			})
 		case client := <-disconnections:
 			s.pool.Remove(client)
-		case message := <-broadcast:
+		case command := <-broadcast:
 			for _, client := range s.pool.GetAll() {
 				select {
-				case client.SendChannel() <- message:
+				case client.SendCommandChannel() <- command:
 				}
 			}
 		}
+	}
+}
+
+func (s *DrawingService) SendJsonFromServer(id string, command Command) {
+	if c, ok := s.pool.Get(id); ok {
+		command.From = FromServer
+		c.SendCommand(command)
 	}
 }
