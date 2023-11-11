@@ -11,6 +11,7 @@ export interface Position {
 interface _DrawingItem<K = string> extends Position {
   kind: K;
   color: string;
+  ongoing?: boolean;
   width: number;
   // TODO : add more properties (e.g. color, stroke, etc.)
 }

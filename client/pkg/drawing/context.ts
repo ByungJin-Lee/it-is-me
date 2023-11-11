@@ -33,11 +33,12 @@ export default class DrawingContext<T extends DrawingItem = DrawingItem> {
     return this.canvas;
   }
 
+  // TODO: 최적화를 위해 나중에 상세 구현하여 사용
   public getFreshItems(stale = false) {
     const items = this.freshItems;
 
     if (stale) {
-      this.freshItems = new Array();
+      this.freshItems = items.filter((it) => it.ongoing);
       this.staleItems = this.staleItems.concat(items);
     }
 

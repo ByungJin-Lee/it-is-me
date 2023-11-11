@@ -1,6 +1,6 @@
 import { Drawing } from "pkg/drawing";
 import { DrawingSocket, IClientSocket } from "pkg/drawing-network-toolkit";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Services {
   drawing: Drawing;
@@ -10,6 +10,7 @@ interface Services {
 export default function useDrawing(
   fps = 30 // 30fps
 ) {
+  const update = useUpdater();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const services = useRef<Services | null>(null);
 
@@ -20,8 +21,9 @@ export default function useDrawing(
         socket: new DrawingSocket("ws://localhost:8080/api/ws/drawing/connect"),
       };
       initialize(services.current);
+      update();
     }
-  }, [canvasRef]);
+  }, [canvasRef, update]);
 
   useEffect(() => {
     if (!services.current) return;
@@ -54,4 +56,12 @@ function initialize({ drawing, socket }: Services) {
   drawing.getContext().setOnItemAdded((e) => {
     socket.sendDraw(e);
   });
+}
+
+function useUpdater() {
+  const [_, setCounter] = useState(0);
+
+  return () => {
+    setCounter((p) => p + 1);
+  };
 }

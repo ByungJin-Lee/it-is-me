@@ -49,13 +49,19 @@ export default class CanvasDrawing extends Drawable<Shapes> {
     this.ctx = ctx;
   }
 
+  protected clear(ctx: DrawingContext<Shapes>): void {
+    const { width, height } = ctx.getCanvas();
+
+    ctx.getCanvasContext().clearRect(0, 0, width, height);
+  }
+
   protected drawBackground(ctx: DrawingContext<Shapes>): void {
     // throw new Error("Method not implemented.");
   }
   protected drawForeground(ctx: DrawingContext<Shapes>): void {
     // throw new Error("Method not implemented.");
     const [items, canvasContext] = [
-      ctx.getFreshItems(true), // make stale
+      ctx.getFreshItems(), // to optimize make stale (current not working)
       ctx.getCanvasContext(),
     ];
     const tool = this.getTool();

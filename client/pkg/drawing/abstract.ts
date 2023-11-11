@@ -9,10 +9,13 @@ import { DrawingCaptureEvents, DrawingItem, Position } from "./types";
 export abstract class Drawable<T extends DrawingItem> {
   protected abstract drawBackground(ctx: DrawingContext<T>): void;
   protected abstract drawForeground(ctx: DrawingContext<T>): void;
+  protected abstract clear(ctx: DrawingContext<T>): void;
   protected abstract getContext(): DrawingContext<T>;
 
   public draw() {
     const ctx = this.getContext();
+    // clear canvas
+    this.clear(ctx);
     // draw background
     this.drawBackground(ctx);
     // draw foreground
