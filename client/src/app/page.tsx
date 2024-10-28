@@ -1,9 +1,9 @@
-import { Whiteboard } from "src/components/whiteboard";
+import { Button } from '@app/components/ui/button'
 
 export default function Home() {
   return (
     <main>
-      <Whiteboard />
+      <Button>This is Button! Click me!</Button>
     </main>
-  );
+  )
 }

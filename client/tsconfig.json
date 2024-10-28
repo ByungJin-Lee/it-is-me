@@ -20,7 +20,8 @@
       }
     ],
     "paths": {
-      "@pkg/*": ["/pkg/*"]
+      "@pkg/*": ["./pkg/*"],
+      "@app/*": ["./src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
