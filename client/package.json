@@ -13,9 +13,9 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "framer-motion": "^10.16.4",
-    "next": "13.5.4",
-    "react": "^18",
-    "react-dom": "^18",
+    "next": "14.2.16",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-feather": "^2.0.10",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
@@ -23,13 +23,13 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@next/swc-linux-x64-musl": "npm:13.5.4",
+    "@next/swc-linux-x64-musl": "^14.2.16",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "cypress": "^13.3.2",
     "eslint": "^8",
-    "eslint-config-next": "13.5.4",
+    "eslint-config-next": "14.2.16",
     "typescript": "^5"
   },
   "packageManager": "yarn@3.6.4"
