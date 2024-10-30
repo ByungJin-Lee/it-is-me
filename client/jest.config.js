@@ -6,7 +6,7 @@ const config = {
   // setupFiles: ['<rootDir>/config/polyfills.js'],
   // setupTestFrameworkScriptFile: '<rootDir>/src/setupTests.ts',
   testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.ts?(x)',
+    '<rootDir>/src/**/test/**/*.ts?(x)',
     '<rootDir>/src/**/?(*.)(spec|test).ts?(x)',
   ],
   moduleNameMapper: {
